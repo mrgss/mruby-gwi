@@ -1,6 +1,6 @@
 language: c
 compiler: gcc
-sudo: false
+sudo: required
 addons:
   apt:
     packages:
@@ -13,8 +13,15 @@ addons:
     - gcc-mingw-w64-i686
     - gcc-mingw-w64-x86-64
     - gcc-mingw-w64
-    - mingw-w64  
+    - mingw-w64
 before_script:
+  - PREFIX=x86_64-w64-mingw32
+  - CC=$PREFIX-gcc
+  - CXX=$PREFIX-g++
+  - CPP=$PREFIX-cpp
+  - RANLIB=$PREFIX-ranlib
+  - PATH="/usr/x86_64-w64-mingw32/bin:$PATH"
+exec "$@"
   - cd ../
   - git clone https://github.com/mruby/mruby.git
   - cd mruby
