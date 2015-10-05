@@ -5,7 +5,8 @@ strange dependencies.
 This gem is part of MRGSS gems, but it works perfectly without it.
 
 ## Compilation & Instalation
-Just put it into your mrbgems directory, the gem handles the rest for you.
+Just put it into your mrbgems directory, the gem handles the rest for you,
+or add it to your gembox, you know, like almost any other mrbgem.
 
 ##Supported Platforms
 Windows Only at the moment.
@@ -44,3 +45,6 @@ GWI.on("click") { |evt|
 ### Event List:
 
 -TODO-
+
+### Requires
+Nothing but OS libraries, that is the idea.
