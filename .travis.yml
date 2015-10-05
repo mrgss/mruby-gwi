@@ -4,7 +4,7 @@ matrix:
   - compiler: ": Win64"
       env: HOST=x86_64-w64-mingw32 PPA="ppa:ubuntu-wine/ppa" PACKAGES="nsis gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 binutils-mingw-w64-x86-64 mingw-w64-dev wine1.7 bc" RUN_TESTS=true GOAL="deploy" BITCOIN_CONFIG="--enable-gui --enable-reduce-exports" MAKEJOBS="-j2"
 before_install:
-    - sudo apt-get -qq update
+    - sudo apt-get -qq update 
 install:
     - sudo apt-get -qq install rake bison git gperf
     - sudo apt-get install binutils-mingw-w64-i686 binutils-mingw-w64-x86-64
