@@ -21,7 +21,6 @@ before_script:
   - CPP=$PREFIX-cpp
   - RANLIB=$PREFIX-ranlib
   - PATH="/usr/x86_64-w64-mingw32/bin:$PATH"
-exec "$@"
   - cd ../
   - git clone https://github.com/mruby/mruby.git
   - cd mruby
