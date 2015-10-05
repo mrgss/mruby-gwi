@@ -1,22 +1,14 @@
 language: c
-compiler:
-  - mingw-w64
+compiler: gcc
+matrix:
+  - compiler: ": Win64"
+      env: HOST=x86_64-w64-mingw32 PPA="ppa:ubuntu-wine/ppa" PACKAGES="nsis gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 binutils-mingw-w64-x86-64 mingw-w64-dev wine1.7 bc" RUN_TESTS=true GOAL="deploy" BITCOIN_CONFIG="--enable-gui --enable-reduce-exports" MAKEJOBS="-j2"
 before_install:
     - sudo apt-get -qq update
 install:
     - sudo apt-get -qq install rake bison git gperf
     - sudo apt-get install binutils-mingw-w64-i686 binutils-mingw-w64-x86-64
     - sudo apt-get install gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 gcc-mingw-w64 mingw-w64
-    - set(CMAKE_SYSTEM_NAME Windows)
-    - set(TOOLCHAIN_PREFIX i686-w64-mingw32)
-    - set(CMAKE_C_COMPILER ${TOOLCHAIN_PREFIX}-gcc)
-    - set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}-g++)
-    - set(CMAKE_RC_COMPILER ${TOOLCHAIN_PREFIX}-windres)
-    - set(CMAKE_FIND_ROOT_PATH /usr/${TOOLCHAIN_PREFIX} ~/crossdev/w32)
-    - set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-    - set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-    - set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-    - set(CC ${TOOLCHAIN_PREFIX}-gcc)
 before_script:
   - cd ../
   - git clone https://github.com/mruby/mruby.git
