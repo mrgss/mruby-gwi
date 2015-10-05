@@ -23,6 +23,7 @@ extern "C" {
 #endif
 
 typedef struct gwi_Event gwi_Event;
+typedef struct gwi_Color gwi_Color;
 
 typedef void (*gwi_loop_callback)(void *);
 typedef void (*gwi_event_callback)(void *, gwi_Event *);
@@ -32,6 +33,14 @@ struct gwi_Event
 {
   const char *name;
 
+};
+
+struct gwi_Color
+{
+  unsigned char red;
+  unsigned char green;
+  unsigned char blue;
+  unsigned char alpha;
 };
 
 void
@@ -75,6 +84,15 @@ gwi_file_open_dialog(void);
 
 char *
 gwi_file_save_dialog(void);
+
+void
+gwi_set_background(gwi_Color *color);
+
+void
+gwi_get_background(gwi_Color *color);
+
+void
+gwi_refresh(void);
 
 #ifdef __cplusplus
 }

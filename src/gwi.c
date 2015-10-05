@@ -30,7 +30,7 @@ struct gwi_event_node
 
 static int gwi_initialized = 0;
 static art_tree gwi_events;
-
+static gwi_Color gwi_bg;
 
 #ifdef _WIN32
 #include "gwi/win32/window.h"
@@ -40,9 +40,10 @@ void
 gwi_init(const char *title, size_t width, size_t height)
 {
   if (gwi_initialized) return;
+  gwi_initialized = 1;
+  gwi_bg.red = gwi_bg.green = gwi_bg.blue = gwi_bg.alpha = 255;
   gwi_open_window(title, width, height);
   assert(!art_tree_init(&gwi_events));
-  gwi_initialized = 1;
 }
 
 void
@@ -87,4 +88,17 @@ gwi_fire(const char *name, gwi_Event *event)
   struct gwi_event_node *handle;
   handle = art_search(&gwi_events, (const unsigned char *)name, (int)strlen(name));
   if (handle) handle->callback(handle->context, event);
+}
+
+void
+gwi_set_background(gwi_Color *color)
+{
+  gwi_bg = *color;
+  gwi_refresh();
+}
+
+void
+gwi_get_background(gwi_Color *color)
+{
+  *color = gwi_bg;
 }

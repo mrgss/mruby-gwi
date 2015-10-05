@@ -22,7 +22,30 @@ static const TCHAR GWI_CLASS_NAME[] = TEXT("GWI_WINDOW_CLASS");
 
 static int gwi_updating = 0;
 
-LRESULT CALLBACK
+static void
+gwi_win32_gdi_repaint(HWND hwnd)
+{
+      PAINTSTRUCT ps;
+      RECT rc;
+      HBRUSH brush;
+      gwi_Color bg;
+      BeginPaint(hwnd, &ps);
+      GetClientRect(
+          hwnd,
+          &rc
+      );
+      gwi_get_background(&bg);
+      brush = CreateSolidBrush(RGB(bg.red, bg.green, bg.blue));
+
+      // Draw a rectangle.
+      FillRect(ps.hdc, &rc, brush);
+
+      DeleteObject(brush);
+
+      EndPaint(hwnd, &ps);
+}
+
+static LRESULT CALLBACK
 gwi_window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch(msg)
@@ -50,6 +73,15 @@ gwi_window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
               break;
           }
           */
+
+
+
+        case WM_PAINT:
+          gwi_win32_gdi_repaint(hwnd);
+          return 0;
+        case WM_SIZE:
+          gwi_win32_gdi_repaint(hwnd);
+          return 0;
         case WM_CLOSE:
             gwi_updating = 0;
             DestroyWindow(hwnd);
@@ -281,6 +313,14 @@ gwi_accept(const char *title, const char *msg)
   result = MessageBox(hwnd, title, msg, MB_OKCANCEL|MB_ICONQUESTION|MB_TASKMODAL);
 #endif
   return result == IDOK;
+}
+
+void
+gwi_refresh(void)
+{
+  RECT rect;
+  GetClientRect(hwnd, &rect);
+  InvalidateRect(hwnd, &rect, FALSE);
 }
 
 #include "gwi/win32/file_dialog.h"

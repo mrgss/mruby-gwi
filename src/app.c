@@ -194,6 +194,28 @@ mrb_gwi_save_file(mrb_state* mrb, mrb_value self)
   return result;
 }
 
+static mrb_value
+mrb_gwi_get_bg(mrb_state* mrb, mrb_value self)
+{
+  gwi_Color c;
+  gwi_get_background(&c);
+  return self;
+}
+
+static mrb_value
+mrb_gwi_set_bg(mrb_state* mrb, mrb_value self)
+{
+  gwi_Color c;
+  mrb_value obj;
+  mrb_get_args(mrb, "o", &obj);
+  c.red   = mrb_int(mrb, mrb_funcall(mrb, obj, "red", 0));
+  c.green = mrb_int(mrb, mrb_funcall(mrb, obj, "green", 0));
+  c.blue  = mrb_int(mrb, mrb_funcall(mrb, obj, "blue", 0));
+  c.alpha = mrb_int(mrb, mrb_funcall(mrb, obj, "alpha", 0));
+  gwi_set_background(&c);
+  return obj;
+}
+
 void
 mrb_gwi_define_app(mrb_state* mrb, struct RClass *GWI)
 {
@@ -212,4 +234,6 @@ mrb_gwi_define_app(mrb_state* mrb, struct RClass *GWI)
   mrb_define_class_method(mrb, GWI, "accept", mrb_gwi_accept, MRB_ARGS_REQ(2));
   mrb_define_class_method(mrb, GWI, "open_file", mrb_gwi_open_file, MRB_ARGS_NONE());
   mrb_define_class_method(mrb, GWI, "save_file", mrb_gwi_save_file, MRB_ARGS_NONE());
+  mrb_define_class_method(mrb, GWI, "background", mrb_gwi_get_bg, MRB_ARGS_NONE());
+  mrb_define_class_method(mrb, GWI, "background=", mrb_gwi_set_bg, MRB_ARGS_REQ(1));
 }
