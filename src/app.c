@@ -31,6 +31,12 @@ struct mrb_gwi_handle
   mrb_value      block;
 };
 
+static void *
+mrb_gwi_malloc(void *mrb, size_t size)
+{
+  return mrb_malloc(mrb, size);
+}
+
 static struct RClass *GWI_CLASS;
 static struct mrb_gwi_handle handle;
 
@@ -61,6 +67,7 @@ mrb_gwi_open(mrb_state* mrb, mrb_value self)
   mrb_int w, h;
   mrb_get_args(mrb, "zii", &t, &w, &h);
   gwi_init(t, w, h);
+  gwi_set_alloc_fn(mrb, mrb_gwi_malloc);
   mrb_mod_cv_set(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"), mrb_hash_new(mrb));
   return self;
 }

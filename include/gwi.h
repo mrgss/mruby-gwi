@@ -22,12 +22,15 @@
 extern "C" {
 #endif
 
-typedef struct gwi_Event gwi_Event;
-typedef struct gwi_Color gwi_Color;
+typedef struct gwi_Handle gwi_Handle;
+typedef struct gwi_Event  gwi_Event;
+typedef struct gwi_Color  gwi_Color;
+typedef struct gwi_Size   gwi_Size;
 
-typedef void (*gwi_loop_callback)(void *);
-typedef void (*gwi_event_callback)(void *, gwi_Event *);
-typedef struct gwi_FileDialogOptions gwi_FileDialogOptions;
+typedef void  (*gwi_loop_callback)(void *);
+typedef void  (*gwi_event_callback)(void *, gwi_Event *);
+typedef void *(*gwi_alloc_fn)(void *, size_t);
+typedef void  (*gwi_free_fn)(void *, void *);
 
 struct gwi_Event
 {
@@ -42,6 +45,15 @@ struct gwi_Color
   unsigned char blue;
   unsigned char alpha;
 };
+
+struct gwi_Size
+{
+  unsigned short top;
+  unsigned short bottom;
+  unsigned short left;
+  unsigned short right;
+};
+
 
 void
 gwi_init(const char *title, size_t width, size_t height);
@@ -93,6 +105,24 @@ gwi_get_background(gwi_Color *color);
 
 void
 gwi_refresh(void);
+
+void
+gwi_set_alloc_fn(void *ctx, gwi_alloc_fn fn );
+
+void
+gwi_set_free_fn(void *ctx, gwi_free_fn fn );
+
+void *
+gwi_alloc(size_t size);
+
+void
+gwi_free(void *ptr);
+
+void
+gwi_free_handle(gwi_Handle *handle);
+
+int
+gwi_Panel(gwi_Handle *p);
 
 #ifdef __cplusplus
 }

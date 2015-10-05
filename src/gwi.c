@@ -18,9 +18,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-
 #include "gwi.h"
-#include "art.h"
+#include "gwi/handle.h"
+#include "radixtree.h"
 
 struct gwi_event_node
 {
@@ -29,8 +29,13 @@ struct gwi_event_node
 };
 
 static int gwi_initialized = 0;
-static art_tree gwi_events;
+static rt_tree  *gwi_events;
 static gwi_Color gwi_bg;
+
+static gwi_free_fn on_free = NULL;
+static gwi_alloc_fn on_alloc = NULL;
+static void  *gwi_alloc_ctx = NULL;
+static void  *gwi_free_ctx  = NULL;
 
 #ifdef _WIN32
 #include "gwi/win32/window.h"
@@ -43,7 +48,8 @@ gwi_init(const char *title, size_t width, size_t height)
   gwi_initialized = 1;
   gwi_bg.red = gwi_bg.green = gwi_bg.blue = gwi_bg.alpha = 255;
   gwi_open_window(title, width, height);
-  assert(!art_tree_init(&gwi_events));
+  gwi_events = rt_tree_malloc(255, gwi_free, gwi_alloc, realloc, gwi_free);
+  assert(gwi_events);
 }
 
 void
@@ -52,7 +58,7 @@ gwi_end(void)
   if (!gwi_initialized) return;
   gwi_close_window();
   gwi_initialized = 0;
-  assert(!art_tree_destroy(&gwi_events));
+  rt_tree_free(gwi_events);
 }
 
 void
@@ -70,15 +76,14 @@ gwi_on(const char *name, void *context, gwi_event_callback callback)
   assert(handle);
   handle->context = context;
   handle->callback   = callback;
-  handle = art_insert(&gwi_events, (const unsigned char *)name, (int)strlen(name), handle);
-  if (handle) free(handle);
+  assert(rt_tree_set(gwi_events, (const unsigned char *)name, strlen(name), handle));
 }
 
 void
 gwi_off(const char *name)
 {
   struct gwi_event_node *handle;
-  handle = art_delete(&gwi_events, (const unsigned char *)name, (int)strlen(name));
+  handle = rt_tree_get(gwi_events, (const unsigned char *)name, strlen(name));
   if (handle) free(handle);
 }
 
@@ -86,7 +91,7 @@ void
 gwi_fire(const char *name, gwi_Event *event)
 {
   struct gwi_event_node *handle;
-  handle = art_search(&gwi_events, (const unsigned char *)name, (int)strlen(name));
+  handle = rt_tree_get(gwi_events, (const unsigned char *)name, strlen(name));
   if (handle) handle->callback(handle->context, event);
 }
 
@@ -101,4 +106,40 @@ void
 gwi_get_background(gwi_Color *color)
 {
   *color = gwi_bg;
+}
+
+void
+gwi_set_alloc_fn(void *ctx, gwi_alloc_fn fn )
+{
+  on_alloc = fn;
+  gwi_alloc_ctx = ctx;
+}
+
+void
+gwi_set_free_fn(void *ctx, gwi_free_fn fn )
+{
+  on_free = fn;
+  gwi_free_ctx = ctx;
+}
+
+void *
+gwi_alloc(size_t size)
+{
+  if (on_alloc)
+    return on_alloc(gwi_alloc_ctx, size);
+  return malloc(size);
+}
+
+void
+gwi_free(void *ptr)
+{
+  if (on_free)
+    on_free(gwi_free_ctx, ptr);
+  free(ptr);
+}
+
+void
+gwi_free_handle(gwi_Handle *handle)
+{
+  gwi_free(handle);
 }
