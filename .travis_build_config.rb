@@ -21,6 +21,6 @@ MRuby::Build.new do |conf|
     linker.flags << '-Wall'
   end
 
-  conf.ar = 'i686-w64-mingw32-ar'
+  conf.archiver.command = 'i686-w64-mingw32-ar'
 
 end
