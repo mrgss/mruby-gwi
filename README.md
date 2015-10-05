@@ -22,20 +22,24 @@ This gem is inspired by shoes in the way it aims to work.
 ## License
 See LICENSE for more information, but in short terms it is APACHE 2.0 license.
 
-## How do I make a program
+## How do I make a program?
 
 ### Making aporgram is quite easy, just do:
 
-    GWI.open("My window", 800, 600)
-    GWI.loop {
-      # my loop code...
-    }
+```ruby
+GWI.open("My window", 800, 600)
+GWI.loop {
+  # my loop code...
+}
+```
 
 ### Adding events works like jQuery:
 
-    GWI.on("click") { |evt|
-      puts "I clicked at (#{evt.x}, #{evt.y})
-    }
+```ruby
+GWI.on("click") { |evt|
+  puts "I clicked at (#{evt.x}, #{evt.y})
+}
+```
 
 ### Event List:
 
