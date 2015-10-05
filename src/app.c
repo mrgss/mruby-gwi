@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 MRGSS developers
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+
+ *    http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include <mruby.h>
 #include <mruby/compile.h>
 #include <mruby/string.h>
@@ -32,7 +47,7 @@ mrb_gwi_handle_event(void *ptr, gwi_Event *event)
 {
   mrb_value hash, block;
   struct mrb_gwi_handle *h = ptr;
-  hash = mrb_mod_cv_get(h->mrb, GWI_CLASS, mrb_intern_lit(h->mrb, "events"));  
+  hash = mrb_mod_cv_get(h->mrb, GWI_CLASS, mrb_intern_lit(h->mrb, "events"));
   block = mrb_hash_get(h->mrb, hash, mrb_str_new_cstr(h->mrb, event->name));
   if (mrb_respond_to(h->mrb, block, mrb_intern_lit(h->mrb, "call")))
     mrb_funcall(h->mrb, block, "call", 1, event);
@@ -43,7 +58,7 @@ mrb_gwi_open(mrb_state* mrb, mrb_value self)
 {
   char *t;
   mrb_int w, h;
-  mrb_get_args(mrb, "zii", &t, &w, &h);  
+  mrb_get_args(mrb, "zii", &t, &w, &h);
   gwi_init(t, w, h);
   mrb_mod_cv_set(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"), mrb_hash_new(mrb));
   return self;
@@ -84,7 +99,7 @@ mrb_gwi_fire(mrb_state* mrb, mrb_value self)
 {
   mrb_value hash, name, event, block;
   mrb_get_args(mrb, "So", &name, &event);
-  hash = mrb_mod_cv_get(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"));  
+  hash = mrb_mod_cv_get(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"));
   block = mrb_hash_get(mrb, hash, name);
   if (mrb_respond_to(mrb, block, mrb_intern_lit(mrb, "call")))
     mrb_funcall(mrb, block, "call", 1, event);
@@ -97,7 +112,7 @@ mrb_gwi_off(mrb_state* mrb, mrb_value self)
 {
   mrb_value hash, name;
   mrb_get_args(mrb, "S", &name);
-  hash = mrb_mod_cv_get(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"));  
+  hash = mrb_mod_cv_get(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"));
   mrb_hash_delete_key(mrb, hash, name);
   gwi_off(mrb_string_value_ptr(mrb, name));
   return self;
@@ -127,7 +142,7 @@ mrb_gwi_warning(mrb_state* mrb, mrb_value self)
 {
   char *msg, *title;
   mrb_get_args(mrb, "zz", &title, &msg);
-  gwi_warning(title, msg); 
+  gwi_warning(title, msg);
   return mrb_nil_value();
 }
 
@@ -157,7 +172,7 @@ mrb_gwi_accept(mrb_state* mrb, mrb_value self)
 }
 
 
-void 
+void
 mrb_gwi_define_app(mrb_state* mrb, struct RClass *GWI)
 {
   GWI_CLASS = GWI;

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 MRGSS developers
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+
+ *    http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #ifndef MRUBY_GWI_H
 #define MRUBY_GWI_H 1
 
@@ -15,13 +30,13 @@ typedef void (*gwi_event_callback)(void *, gwi_Event *);
 struct gwi_Event
 {
   const char *name;
-  
+
 };
 
-void 
+void
 gwi_init(const char *title, size_t width, size_t height);
 
-void 
+void
 gwi_end(void);
 
 void
@@ -30,13 +45,13 @@ gwi_main_loop(void *context, gwi_loop_callback callback);
 void
 gwi_message(const char *title, const char *msg);
 
-void 
+void
 gwi_error(const char *title, const char *msg);
 
-void 
+void
 gwi_info(const char *title, const char *msg);
 
-void 
+void
 gwi_warning(const char *title, const char *msg);
 
 int

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 MRGSS developers
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+
+ *    http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include <windows.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -6,7 +21,7 @@ static const TCHAR GWI_CLASS_NAME[] = TEXT("GWI_WINDOW_CLASS");
 
 static int gwi_updating = 0;
 
-LRESULT CALLBACK 
+LRESULT CALLBACK
 gwi_window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch(msg)
@@ -69,9 +84,9 @@ gwi_register_window_class(void)
   wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
   wc.lpszMenuName  = NULL;
   wc.lpszClassName = GWI_CLASS_NAME;
-  wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);  
-  
-  assert(RegisterClassEx(&wc)); 
+  wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+
+  assert(RegisterClassEx(&wc));
 }
 
 static void
@@ -83,7 +98,7 @@ gwi_create_window_handle(TCHAR *title, size_t width, size_t height)
         title,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, width, height,
-        NULL, NULL, GetModuleHandle(NULL), NULL);  
+        NULL, NULL, GetModuleHandle(NULL), NULL);
   assert(hwnd != NULL);
   ShowWindow(hwnd, 1);
   UpdateWindow(hwnd);
@@ -106,7 +121,7 @@ gwi_utf8_to_utf16(const char *str)
 static void
 gwi_open_window(const char *title, size_t width, size_t height)
 {
-  gwi_register_window_class();  
+  gwi_register_window_class();
 #ifdef _UNICODE
   {
      TCHAR *title_tchar = gwi_utf8_to_utf16(title);
@@ -129,7 +144,7 @@ gwi_close_window(void)
 static int
 gwi_update_window(void *context, gwi_loop_callback callback)
 {
-  
+
     while(GetMessage(&msg, NULL, 0, 0) > 0)
     {
         TranslateMessage(&msg);
@@ -142,9 +157,9 @@ gwi_update_window(void *context, gwi_loop_callback callback)
 void
 gwi_message(const char *title, const char *msg)
 {
-#ifdef _UNICODE  
+#ifdef _UNICODE
   wchar_t *wmsg, *wtitle;
-#endif  
+#endif
   if (!gwi_updating) return;
 #ifdef _UNICODE
   wmsg = gwi_utf8_to_utf16(msg);
@@ -157,12 +172,12 @@ gwi_message(const char *title, const char *msg)
 #endif
 }
 
-void 
+void
 gwi_error(const char *title, const char *msg)
 {
-#ifdef _UNICODE  
+#ifdef _UNICODE
   wchar_t *wmsg, *wtitle;
-#endif  
+#endif
   if (!gwi_updating) return;
 #ifdef _UNICODE
   wmsg = gwi_utf8_to_utf16(msg);
@@ -175,12 +190,12 @@ gwi_error(const char *title, const char *msg)
 #endif
 }
 
-void 
+void
 gwi_info(const char *title, const char *msg)
 {
-#ifdef _UNICODE  
+#ifdef _UNICODE
   wchar_t *wmsg, *wtitle;
-#endif  
+#endif
   if (!gwi_updating) return;
 #ifdef _UNICODE
   wmsg = gwi_utf8_to_utf16(msg);
@@ -193,12 +208,12 @@ gwi_info(const char *title, const char *msg)
 #endif
 }
 
-void 
+void
 gwi_warning(const char *title, const char *msg)
 {
-#ifdef _UNICODE  
+#ifdef _UNICODE
   wchar_t *wmsg, *wtitle;
-#endif  
+#endif
   if (!gwi_updating) return;
 #ifdef _UNICODE
   wmsg = gwi_utf8_to_utf16(msg);
@@ -215,9 +230,9 @@ int
 gwi_ask(const char *title, const char *msg)
 {
   int result;
-#ifdef _UNICODE  
+#ifdef _UNICODE
   wchar_t *wmsg, *wtitle;
-#endif  
+#endif
   if (!gwi_updating) return 0;
 #ifdef _UNICODE
   wmsg = gwi_utf8_to_utf16(msg);
@@ -235,9 +250,9 @@ int
 gwi_accept(const char *title, const char *msg)
 {
   int result;
-#ifdef _UNICODE  
+#ifdef _UNICODE
   wchar_t *wmsg, *wtitle;
-#endif  
+#endif
   if (!gwi_updating) return 0;
 #ifdef _UNICODE
   wmsg = gwi_utf8_to_utf16(msg);
