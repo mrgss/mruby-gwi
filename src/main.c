@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 #include <mruby.h>
-#include <stdio.h>
+#include <stdio.h> 
 #include "gwi.h"
- 
+
 void
 mrb_gwi_define_app(mrb_state* mrb, struct RClass *GWI);
 
