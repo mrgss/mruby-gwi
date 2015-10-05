@@ -1,5 +1,5 @@
 MRuby::Build.new do |conf|
-  toolchain "gcc-mingw-64"
+  toolchain :gcc
   conf.gembox 'default'
   conf.gem '../mruby-gwi'
 end
