@@ -11,4 +11,8 @@ MRuby::Build.new do |conf|
     cxx.command = "i686-w64-mingw32-g++"
   end
 
+  conf.linker do |linker|
+    linker.command = "i686-w64-mingw32-gcc"
+  end
+
 end
