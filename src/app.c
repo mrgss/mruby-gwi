@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <mruby.h>
 #include <mruby/compile.h>
 #include <mruby/string.h>
@@ -31,7 +31,7 @@ struct mrb_gwi_handle
   mrb_value      block;
 };
 
-static void *
+static void * 
 mrb_gwi_malloc(void *mrb, size_t size)
 {
   return mrb_malloc(mrb, size);
