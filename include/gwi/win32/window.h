@@ -16,6 +16,7 @@
 #include <windows.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 static const TCHAR GWI_CLASS_NAME[] = TEXT("GWI_WINDOW_CLASS");
 
@@ -26,6 +27,7 @@ gwi_window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch(msg)
     {
+      /*
         case WM_MOVE:
           {
             short int x, y;
@@ -47,6 +49,7 @@ gwi_window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             default:
               break;
           }
+          */
         case WM_CLOSE:
             gwi_updating = 0;
             DestroyWindow(hwnd);
@@ -58,7 +61,7 @@ gwi_window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         default:
             return DefWindowProc(hwnd, msg, wParam, lParam);
     }
-    return 0;
+    return 1;
 }
 
 static WNDCLASSEX gwi_window_class;
@@ -68,7 +71,6 @@ static MSG gwi_window_msg;
 #define wc   gwi_window_class
 #define hwnd gwi_window_hwnd
 #define msg  gwi_window_msg
-
 
 static void
 gwi_register_window_class(void)
@@ -118,6 +120,19 @@ gwi_utf8_to_utf16(const char *str)
   return buff;
 }
 
+static char *
+gwi_utf16_to_utf32(const wchar_t *str)
+{
+  int   size;
+  char *buff;
+  size = WideCharToMultiByte(CP_UTF8, 0, str, -1, NULL, 0, NULL, NULL);
+  assert(size);
+  buff = malloc(size * sizeof *buff);
+  assert(buff);
+  assert(WideCharToMultiByte(CP_UTF8, 0, str, -1, buff, size, NULL, NULL));
+  return buff;
+}
+
 static void
 gwi_open_window(const char *title, size_t width, size_t height)
 {
@@ -131,7 +146,6 @@ gwi_open_window(const char *title, size_t width, size_t height)
 #else
   gwi_create_window_handle(title, width, height);
 #endif
-  gwi_updating = 1;
 }
 
 static void
@@ -144,12 +158,15 @@ gwi_close_window(void)
 static int
 gwi_update_window(void *context, gwi_loop_callback callback)
 {
-
-    while(GetMessage(&msg, NULL, 0, 0) > 0)
+  BOOL bRet;
+    gwi_updating = 1;
+    while( (bRet = GetMessage(&msg, NULL, 0, 0)) != 0)
     {
+      if (bRet != -1) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
         if (callback) callback(context);
+      }
     }
     return gwi_updating;
 }
@@ -265,3 +282,5 @@ gwi_accept(const char *title, const char *msg)
 #endif
   return result == IDOK;
 }
+
+#include "gwi/win32/file_dialog.h"

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ #include <stdlib.h>
 #include <mruby.h>
 #include <mruby/compile.h>
 #include <mruby/string.h>
@@ -171,6 +172,27 @@ mrb_gwi_accept(mrb_state* mrb, mrb_value self)
   return mrb_bool_value(gwi_accept(title, msg));
 }
 
+static mrb_value
+mrb_gwi_open_file(mrb_state* mrb, mrb_value self)
+{
+  mrb_value result;
+  char *str;
+  str = gwi_file_open_dialog();
+  result = str ? mrb_str_new_cstr(mrb, str) : mrb_nil_value();
+  free(str);
+  return result;
+}
+
+static mrb_value
+mrb_gwi_save_file(mrb_state* mrb, mrb_value self)
+{
+  mrb_value result;
+  char *str;
+  str = gwi_file_save_dialog();
+  result = str ? mrb_str_new_cstr(mrb, str) : mrb_nil_value();
+  free(str);
+  return result;
+}
 
 void
 mrb_gwi_define_app(mrb_state* mrb, struct RClass *GWI)
@@ -188,4 +210,6 @@ mrb_gwi_define_app(mrb_state* mrb, struct RClass *GWI)
   mrb_define_class_method(mrb, GWI, "info", mrb_gwi_info, MRB_ARGS_REQ(2));
   mrb_define_class_method(mrb, GWI, "ask", mrb_gwi_ask, MRB_ARGS_REQ(2));
   mrb_define_class_method(mrb, GWI, "accept", mrb_gwi_accept, MRB_ARGS_REQ(2));
+  mrb_define_class_method(mrb, GWI, "open_file", mrb_gwi_open_file, MRB_ARGS_NONE());
+  mrb_define_class_method(mrb, GWI, "save_file", mrb_gwi_save_file, MRB_ARGS_NONE());
 }

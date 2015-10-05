@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include <mruby.h>
+#include <stdio.h>
 #include "gwi.h"
 
 void

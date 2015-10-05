@@ -26,6 +26,7 @@ typedef struct gwi_Event gwi_Event;
 
 typedef void (*gwi_loop_callback)(void *);
 typedef void (*gwi_event_callback)(void *, gwi_Event *);
+typedef struct gwi_FileDialogOptions gwi_FileDialogOptions;
 
 struct gwi_Event
 {
@@ -68,6 +69,12 @@ gwi_off(const char *name);
 
 void
 gwi_fire(const char *name, gwi_Event *event);
+
+char *
+gwi_file_open_dialog(void);
+
+char *
+gwi_file_save_dialog(void);
 
 #ifdef __cplusplus
 }
