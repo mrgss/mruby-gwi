@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef GWI_WIN32_WINDOW_H
+#define GWI_WIN32_WINDOW_H 1
+
 #include <windows.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "gwi/win32/utf.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static const TCHAR GWI_CLASS_NAME[] = TEXT("GWI_WINDOW_CLASS");
 
@@ -138,32 +146,7 @@ gwi_create_window_handle(TCHAR *title, size_t width, size_t height)
   UpdateWindow(hwnd);
 }
 
-static wchar_t *
-gwi_utf8_to_utf16(const char *str)
-{
-  int size;
-  wchar_t *buff;
-  size = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
-  assert(size);
-  buff = malloc((size + 1) * sizeof *buff);
-  assert(buff);
-  assert(MultiByteToWideChar(CP_UTF8, 0, str, -1, buff, size));
-  buff[size] = 0;
-  return buff;
-}
 
-static char *
-gwi_utf16_to_utf32(const wchar_t *str)
-{
-  int   size;
-  char *buff;
-  size = WideCharToMultiByte(CP_UTF8, 0, str, -1, NULL, 0, NULL, NULL);
-  assert(size);
-  buff = malloc(size * sizeof *buff);
-  assert(buff);
-  assert(WideCharToMultiByte(CP_UTF8, 0, str, -1, buff, size, NULL, NULL));
-  return buff;
-}
 
 static void
 gwi_open_window(const char *title, size_t width, size_t height)
@@ -323,4 +306,11 @@ gwi_refresh(void)
   InvalidateRect(hwnd, &rect, FALSE);
 }
 
+#ifdef __cplusplus
+}
+#endif
+
 #include "gwi/win32/file_dialog.h"
+#include "gwi/win32/font.h"
+
+#endif

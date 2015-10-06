@@ -13,6 +13,7 @@ MRuby::Gem::Specification.new('mruby-gwi') do |spec|
   # Add libraries
   # spec.linker.libraries << 'external_lib'
   spec.linker.libraries << 'Comdlg32'
+  spec.linker.libraries << 'comctl32'
   spec.linker.libraries << 'Gdi32'
   
   # Default build files

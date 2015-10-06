@@ -23,6 +23,7 @@
 #include <mruby/value.h>
 #include <mruby/class.h>
 #include "gwi.h"
+#include "gwi_color_utils.h"
 
 struct mrb_gwi_handle
 {
@@ -37,7 +38,6 @@ mrb_gwi_malloc(void *mrb, size_t size)
   return mrb_malloc(mrb, size);
 }
 
-static struct RClass *GWI_CLASS;
 static struct mrb_gwi_handle handle;
 
 static void
@@ -54,7 +54,7 @@ mrb_gwi_handle_event(void *ptr, gwi_Event *event)
 {
   mrb_value hash, block;
   struct mrb_gwi_handle *h = ptr;
-  hash = mrb_mod_cv_get(h->mrb, GWI_CLASS, mrb_intern_lit(h->mrb, "events"));
+  hash = mrb_mod_cv_get(h->mrb, mrb_module_get(h->mrb, "GWI"), mrb_intern_lit(h->mrb, "events"));
   block = mrb_hash_get(h->mrb, hash, mrb_str_new_cstr(h->mrb, event->name));
   if (mrb_respond_to(h->mrb, block, mrb_intern_lit(h->mrb, "call")))
     mrb_funcall(h->mrb, block, "call", 1, event);
@@ -68,14 +68,14 @@ mrb_gwi_open(mrb_state* mrb, mrb_value self)
   mrb_get_args(mrb, "zii", &t, &w, &h);
   gwi_init(t, w, h);
   gwi_set_alloc_fn(mrb, mrb_gwi_malloc);
-  mrb_mod_cv_set(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"), mrb_hash_new(mrb));
+  mrb_mod_cv_set(mrb, mrb_module_get(mrb, "GWI"), mrb_intern_lit(mrb, "events"), mrb_hash_new(mrb));
   return self;
 }
 
 static mrb_value
 mrb_gwi_close(mrb_state* mrb, mrb_value self)
 {
-  mrb_mod_cv_set(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"), mrb_hash_new(mrb));
+  mrb_mod_cv_set(mrb, mrb_module_get(mrb, "GWI"), mrb_intern_lit(mrb, "events"), mrb_hash_new(mrb));
   gwi_end();
   return self;
 }
@@ -85,7 +85,7 @@ mrb_gwi_loop(mrb_state* mrb, mrb_value self)
 {
   handle.mrb = mrb;
   mrb_get_args(mrb, "&", &(handle.block));
-  mrb_mod_cv_set(mrb, GWI_CLASS, mrb_intern_lit(mrb, "block_value"), handle.block);
+  mrb_mod_cv_set(mrb, mrb_module_get(mrb, "GWI"), mrb_intern_lit(mrb, "block_value"), handle.block);
   gwi_main_loop(&handle, mrb_gwi_update);
   return self;
 }
@@ -94,9 +94,9 @@ static mrb_value
 mrb_gwi_on(mrb_state* mrb, mrb_value self)
 {
   mrb_value hash, name, block;
-  handle.GWI = GWI_CLASS;
+  handle.GWI = mrb_module_get(mrb, "GWI");
   mrb_get_args(mrb, "S&", &name, &block);
-  hash = mrb_mod_cv_get(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"));
+  hash = mrb_mod_cv_get(mrb, mrb_module_get(mrb, "GWI"), mrb_intern_lit(mrb, "events"));
   mrb_hash_set(mrb, hash, name, block);
   gwi_on(mrb_string_value_ptr(mrb, name), &handle, mrb_gwi_handle_event);
   return self;
@@ -107,7 +107,7 @@ mrb_gwi_fire(mrb_state* mrb, mrb_value self)
 {
   mrb_value hash, name, event, block;
   mrb_get_args(mrb, "So", &name, &event);
-  hash = mrb_mod_cv_get(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"));
+  hash = mrb_mod_cv_get(mrb, mrb_module_get(mrb, "GWI"), mrb_intern_lit(mrb, "events"));
   block = mrb_hash_get(mrb, hash, name);
   if (mrb_respond_to(mrb, block, mrb_intern_lit(mrb, "call")))
     mrb_funcall(mrb, block, "call", 1, event);
@@ -120,7 +120,7 @@ mrb_gwi_off(mrb_state* mrb, mrb_value self)
 {
   mrb_value hash, name;
   mrb_get_args(mrb, "S", &name);
-  hash = mrb_mod_cv_get(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"));
+  hash = mrb_mod_cv_get(mrb, mrb_module_get(mrb, "GWI"), mrb_intern_lit(mrb, "events"));
   mrb_hash_delete_key(mrb, hash, name);
   gwi_off(mrb_string_value_ptr(mrb, name));
   return self;
@@ -131,7 +131,7 @@ mrb_gwi_get_bg(mrb_state* mrb, mrb_value self)
 {
   gwi_Color c;
   gwi_get_background(&c);
-  return self;
+  return mrb_gwi_color_new(mrb, &c);
 }
 
 static mrb_value
@@ -140,10 +140,7 @@ mrb_gwi_set_bg(mrb_state* mrb, mrb_value self)
   gwi_Color c;
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
-  c.red   = mrb_int(mrb, mrb_funcall(mrb, obj, "red", 0));
-  c.green = mrb_int(mrb, mrb_funcall(mrb, obj, "green", 0));
-  c.blue  = mrb_int(mrb, mrb_funcall(mrb, obj, "blue", 0));
-  c.alpha = mrb_int(mrb, mrb_funcall(mrb, obj, "alpha", 0));
+  mrb_gwi_color_from_ruby(mrb, obj, &c);
   gwi_set_background(&c);
   return obj;
 }
@@ -151,7 +148,6 @@ mrb_gwi_set_bg(mrb_state* mrb, mrb_value self)
 void
 mrb_gwi_define_app(mrb_state* mrb, struct RClass *GWI)
 {
-  GWI_CLASS = GWI;
   mrb_define_class_method(mrb, GWI, "open", mrb_gwi_open, MRB_ARGS_REQ(3));
   mrb_define_class_method(mrb, GWI, "close", mrb_gwi_close, MRB_ARGS_NONE());
   mrb_define_class_method(mrb, GWI, "loop", mrb_gwi_loop, MRB_ARGS_BLOCK());

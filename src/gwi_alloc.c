@@ -43,9 +43,13 @@ gwi_set_free_fn(void *ctx, gwi_free_fn fn )
 void *
 gwi_alloc(size_t size)
 {
+  void *result;
   if (on_alloc)
-    return on_alloc(gwi_alloc_ctx, size);
-  return malloc(size);
+    result = on_alloc(gwi_alloc_ctx, size);
+  else
+    result = malloc(size);
+  assert(result);
+  return result;
 }
 
 void

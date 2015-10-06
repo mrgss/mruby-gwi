@@ -24,7 +24,8 @@
 #include <mruby/class.h>
 #include "gwi.h"
 
-
+mrb_value
+mrb_gwi_font_new(mrb_state* mrb, gwi_Font *fnt);
 
 static mrb_value
 mrb_gwi_message(mrb_state* mrb, mrb_value self)
@@ -101,15 +102,27 @@ mrb_gwi_save_file(mrb_state* mrb, mrb_value self)
   return result;
 }
 
+static mrb_value
+mrb_gwi_select_font(mrb_state* mrb, mrb_value self)
+{
+  gwi_Font *fnt;
+  fnt = gwi_select_font();
+  if (fnt) {
+    return mrb_gwi_font_new(mrb, fnt);
+  }
+  return mrb_nil_value();
+}
+
 void
 mrb_gwi_define_dialogs(mrb_state* mrb, struct RClass *GWI)
 {
-mrb_define_class_method(mrb, GWI, "message", mrb_gwi_message, MRB_ARGS_REQ(2));
-mrb_define_class_method(mrb, GWI, "error", mrb_gwi_error, MRB_ARGS_REQ(2));
-mrb_define_class_method(mrb, GWI, "warning", mrb_gwi_warning, MRB_ARGS_REQ(2));
-mrb_define_class_method(mrb, GWI, "info", mrb_gwi_info, MRB_ARGS_REQ(2));
-mrb_define_class_method(mrb, GWI, "ask", mrb_gwi_ask, MRB_ARGS_REQ(2));
-mrb_define_class_method(mrb, GWI, "accept", mrb_gwi_accept, MRB_ARGS_REQ(2));
-mrb_define_class_method(mrb, GWI, "open_file", mrb_gwi_open_file, MRB_ARGS_NONE());
-mrb_define_class_method(mrb, GWI, "save_file", mrb_gwi_save_file, MRB_ARGS_NONE());
+  mrb_define_class_method(mrb, GWI, "message", mrb_gwi_message, MRB_ARGS_REQ(2));
+  mrb_define_class_method(mrb, GWI, "error", mrb_gwi_error, MRB_ARGS_REQ(2));
+  mrb_define_class_method(mrb, GWI, "warning", mrb_gwi_warning, MRB_ARGS_REQ(2));
+  mrb_define_class_method(mrb, GWI, "info", mrb_gwi_info, MRB_ARGS_REQ(2));
+  mrb_define_class_method(mrb, GWI, "ask", mrb_gwi_ask, MRB_ARGS_REQ(2));
+  mrb_define_class_method(mrb, GWI, "accept", mrb_gwi_accept, MRB_ARGS_REQ(2));
+  mrb_define_class_method(mrb, GWI, "open_file", mrb_gwi_open_file, MRB_ARGS_NONE());
+  mrb_define_class_method(mrb, GWI, "save_file", mrb_gwi_save_file, MRB_ARGS_NONE());
+  mrb_define_class_method(mrb, GWI, "select_font", mrb_gwi_select_font, MRB_ARGS_NONE());
 }

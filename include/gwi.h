@@ -22,10 +22,12 @@
 extern "C" {
 #endif
 
-typedef struct gwi_Handle gwi_Handle;
-typedef struct gwi_Event  gwi_Event;
-typedef struct gwi_Color  gwi_Color;
-typedef struct gwi_Size   gwi_Size;
+typedef struct gwi_Handle      gwi_Handle;
+typedef struct gwi_Event       gwi_Event;
+typedef struct gwi_Color       gwi_Color;
+typedef struct gwi_Size        gwi_Size;
+typedef struct gwi_Font        gwi_Font;
+typedef struct gwi_FontOptions gwi_FontOptions;
 
 typedef void  (*gwi_loop_callback)(void *);
 typedef void  (*gwi_event_callback)(void *, gwi_Event *);
@@ -36,6 +38,14 @@ struct gwi_Event
 {
   const char *name;
 
+};
+
+struct gwi_FontOptions
+{
+  char underline;
+  char italic;
+  char strike;
+  char bold;
 };
 
 struct gwi_Color
@@ -132,6 +142,18 @@ gwi_handle_off(gwi_Handle *h, const char *name);
 
 void
 gwi_handle_fire(gwi_Handle *h, const char *name, gwi_Event *evt);
+
+gwi_Font *
+gwi_load_font(const char *name, size_t size, gwi_FontOptions *options);
+
+void
+gwi_free_font(gwi_Font *fnt);
+
+gwi_Font *
+gwi_select_font(void);
+
+int
+gwi_font_is_valid(gwi_Font *fnt);
 
 #ifdef __cplusplus
 }

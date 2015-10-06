@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef GWI_WIN32_FILE_DIALOG_H
+#define GWI_WIN32_FILE_DIALOG_H 1
+
+ #ifdef __cplusplus
+  extern "C" {
+ #endif
 
 #define GWI_FILE_DIALOG_BUFFER_SIZE 512
 
@@ -83,3 +89,9 @@ gwi_file_save_dialog(void)
   }
   return NULL;
 }
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
