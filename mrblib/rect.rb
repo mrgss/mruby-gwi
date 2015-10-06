@@ -13,54 +13,60 @@
 # See the License for the specific language governing permissions and          #
 # limitations under the License.                                               #
 #===============================================================================
-class GWI::Color
+class GWI::Rect
 
-  attr_reader :red
-  attr_reader :green
-  attr_reader :blue
-  attr_reader :alpha
+  attr_reader :x
+  attr_reader :y
+  attr_reader :width
+  attr_reader :height
 
-  def initialize(red = 0, green = 0, blue = 0, alpha = 255)
-    if red.is_a?(::GWI::Color)
-      self.set(red.red, red.green, red.blue, red.alpha)
+  def initialize(x = 0, y = 0, width = 0, height = 0)
+    if x.is_a?(::GWI::Rect)
+      self.set(x.x, x.y, x.width, x.height)
     else
-      self.set(red, green, blue, alpha)
+      self.set(x, y, width, height)
     end
   end
 
-  def set(red, green, blue, alpha = nil)
-    self.red = red
-    self.green = green
-    self.blue = blue
-    self.alpha = alpha ? alpha : 0
+  def set(x, y, width, height)
+    self.x = x
+    self.y = y
+    self.width = width
+    self.height = height
   end
 
-  def red=(value)
-    unless value.is_a?(Numeric)
-      raise TypeError.new("Value of red must be a Numeric.")
+  def x=(value)
+    unless (value.is_a?(Numeric))
+      raise TypeError.new("Value of x must be a Numeric.")
     end
-    @red = value > 255 ? 255 : (value < 0 ? 0 : value.to_i)
+    if (value < 0)
+      raise ArgumentError.new("Value of x must be bigger than zero.")
+    end
+    @x = value.to_i
   end
 
-  def green=(value)
-    unless value.is_a?(Numeric)
-      raise TypeError.new("Value of green must be a Numeric.")
+  def y=(value)
+    unless (value.is_a?(Numeric))
+      raise TypeError.new("Value of y must be a Numeric.")
     end
-    @green = value > 255 ? 255 : (value < 0 ? 0 : value.to_i)
+    if (value < 0)
+      raise ArgumentError.new("Value of y must be bigger than zero.")
+    end
+    @y = value.to_i
   end
 
-  def blue=(value)
-    unless value.is_a?(Numeric)
-      raise TypeError.new("Value of blue must be a Numeric.")
+  def width=(value)
+    unless (value.is_a?(Numeric))
+      raise TypeError.new("Value of y must be a Numeric.")
     end
-    @blue = value > 255 ? 255 : (value < 0 ? 0 : value.to_i)
+    @width = value.to_i
   end
 
-  def alpha=(value)
-    unless value.is_a?(Numeric)
-      raise TypeError.new("Value of alpha must be a Numeric.")
+  def height=(value)
+    unless (value.is_a?(Numeric))
+      raise TypeError.new("Value of y must be a Numeric.")
     end
-    @alpha = value > 255 ? 255 : (value < 0 ? 0 : value.to_i)
+    @height = value.to_i
   end
 
 end
