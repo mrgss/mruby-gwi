@@ -312,5 +312,6 @@ gwi_refresh(void)
 
 #include "gwi/win32/file_dialog.h"
 #include "gwi/win32/font.h"
+#include "gwi/win32/drawings.h"
 
 #endif

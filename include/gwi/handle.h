@@ -5,10 +5,11 @@
 
 struct gwi_panel
 {
-  gwi_Color  border_color, bg_color, txt_color;
+  gwi_Color  border_color, bg_color, txt_color, shadow_color;
   gwi_Size   border_size, padding;
   int id;
   int cast_shadow;
+  struct { int vertical; int horizontal; } shadow_offset;
   int x, y;
   unsigned int width, height, depth;
 };
@@ -28,6 +29,7 @@ struct gwi_Handle
 {
   union gwi_handle_value value;
   enum gwi_handle_type type;
+  void (*on_draw)(gwi_Handle *);
   rt_tree *events;
 };
 
