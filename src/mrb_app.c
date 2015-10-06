@@ -31,7 +31,7 @@ struct mrb_gwi_handle
   mrb_value      block;
 };
 
-static void * 
+static void *
 mrb_gwi_malloc(void *mrb, size_t size)
 {
   return mrb_malloc(mrb, size);
@@ -93,8 +93,8 @@ mrb_gwi_loop(mrb_state* mrb, mrb_value self)
 static mrb_value
 mrb_gwi_on(mrb_state* mrb, mrb_value self)
 {
-  handle.GWI = GWI_CLASS;
   mrb_value hash, name, block;
+  handle.GWI = GWI_CLASS;
   mrb_get_args(mrb, "S&", &name, &block);
   hash = mrb_mod_cv_get(mrb, GWI_CLASS, mrb_intern_lit(mrb, "events"));
   mrb_hash_set(mrb, hash, name, block);
@@ -124,81 +124,6 @@ mrb_gwi_off(mrb_state* mrb, mrb_value self)
   mrb_hash_delete_key(mrb, hash, name);
   gwi_off(mrb_string_value_ptr(mrb, name));
   return self;
-}
-
-static mrb_value
-mrb_gwi_message(mrb_state* mrb, mrb_value self)
-{
-  char *msg, *title;
-  mrb_get_args(mrb, "zz", &title, &msg);
-  gwi_message(title, msg);
-  return mrb_nil_value();
-}
-
-static mrb_value
-mrb_gwi_error(mrb_state* mrb, mrb_value self)
-{
-  char *msg, *title;
-  mrb_get_args(mrb, "zz", &title, &msg);
-  gwi_error(title, msg);
-  return mrb_nil_value();
-}
-
-
-static mrb_value
-mrb_gwi_warning(mrb_state* mrb, mrb_value self)
-{
-  char *msg, *title;
-  mrb_get_args(mrb, "zz", &title, &msg);
-  gwi_warning(title, msg);
-  return mrb_nil_value();
-}
-
-static mrb_value
-mrb_gwi_info(mrb_state* mrb, mrb_value self)
-{
-  char *msg, *title;
-  mrb_get_args(mrb, "zz", &title, &msg);
-  gwi_info(title, msg);
-  return mrb_nil_value();
-}
-
-static mrb_value
-mrb_gwi_ask(mrb_state* mrb, mrb_value self)
-{
-  char *msg, *title;
-  mrb_get_args(mrb, "zz", &title, &msg);
-  return mrb_bool_value(gwi_ask(title, msg));
-}
-
-static mrb_value
-mrb_gwi_accept(mrb_state* mrb, mrb_value self)
-{
-  char *msg, *title;
-  mrb_get_args(mrb, "zz", &title, &msg);
-  return mrb_bool_value(gwi_accept(title, msg));
-}
-
-static mrb_value
-mrb_gwi_open_file(mrb_state* mrb, mrb_value self)
-{
-  mrb_value result;
-  char *str;
-  str = gwi_file_open_dialog();
-  result = str ? mrb_str_new_cstr(mrb, str) : mrb_nil_value();
-  free(str);
-  return result;
-}
-
-static mrb_value
-mrb_gwi_save_file(mrb_state* mrb, mrb_value self)
-{
-  mrb_value result;
-  char *str;
-  str = gwi_file_save_dialog();
-  result = str ? mrb_str_new_cstr(mrb, str) : mrb_nil_value();
-  free(str);
-  return result;
 }
 
 static mrb_value
@@ -233,14 +158,6 @@ mrb_gwi_define_app(mrb_state* mrb, struct RClass *GWI)
   mrb_define_class_method(mrb, GWI, "on", mrb_gwi_on, MRB_ARGS_REQ(1)|MRB_ARGS_BLOCK());
   mrb_define_class_method(mrb, GWI, "fire", mrb_gwi_fire, MRB_ARGS_REQ(2));
   mrb_define_class_method(mrb, GWI, "off", mrb_gwi_off, MRB_ARGS_REQ(1));
-  mrb_define_class_method(mrb, GWI, "message", mrb_gwi_message, MRB_ARGS_REQ(2));
-  mrb_define_class_method(mrb, GWI, "error", mrb_gwi_error, MRB_ARGS_REQ(2));
-  mrb_define_class_method(mrb, GWI, "warning", mrb_gwi_warning, MRB_ARGS_REQ(2));
-  mrb_define_class_method(mrb, GWI, "info", mrb_gwi_info, MRB_ARGS_REQ(2));
-  mrb_define_class_method(mrb, GWI, "ask", mrb_gwi_ask, MRB_ARGS_REQ(2));
-  mrb_define_class_method(mrb, GWI, "accept", mrb_gwi_accept, MRB_ARGS_REQ(2));
-  mrb_define_class_method(mrb, GWI, "open_file", mrb_gwi_open_file, MRB_ARGS_NONE());
-  mrb_define_class_method(mrb, GWI, "save_file", mrb_gwi_save_file, MRB_ARGS_NONE());
   mrb_define_class_method(mrb, GWI, "background", mrb_gwi_get_bg, MRB_ARGS_NONE());
   mrb_define_class_method(mrb, GWI, "background=", mrb_gwi_set_bg, MRB_ARGS_REQ(1));
 }

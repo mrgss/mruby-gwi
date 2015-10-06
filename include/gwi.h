@@ -124,6 +124,15 @@ gwi_free_handle(gwi_Handle *handle);
 int
 gwi_Panel(gwi_Handle *p);
 
+void
+gwi_handle_on(gwi_Handle *h, const char *name, void *context, gwi_event_callback event);
+
+void
+gwi_handle_off(gwi_Handle *h, const char *name);
+
+void
+gwi_handle_fire(gwi_Handle *h, const char *name, gwi_Event *evt);
+
 #ifdef __cplusplus
 }
 #endif

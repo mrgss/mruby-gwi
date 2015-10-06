@@ -19,23 +19,11 @@
 #include <assert.h>
 #include <string.h>
 #include "gwi.h"
-#include "gwi/handle.h"
 #include "radixtree.h"
 
-struct gwi_event_node
-{
-  void              *context;
-  gwi_event_callback callback;
-};
-
 static int gwi_initialized = 0;
-static rt_tree  *gwi_events;
 static gwi_Color gwi_bg;
-
-static gwi_free_fn on_free = NULL;
-static gwi_alloc_fn on_alloc = NULL;
-static void  *gwi_alloc_ctx = NULL;
-static void  *gwi_free_ctx  = NULL;
+extern rt_tree  *gwi_events;
 
 #ifdef _WIN32
 #include "gwi/win32/window.h"
@@ -59,6 +47,7 @@ gwi_end(void)
   gwi_close_window();
   gwi_initialized = 0;
   rt_tree_free(gwi_events);
+  gwi_events = NULL;
 }
 
 void
@@ -66,33 +55,6 @@ gwi_main_loop(void *context, gwi_loop_callback callback)
 {
   if (!gwi_initialized) return;
   while (gwi_update_window(context, callback));
-}
-
-void
-gwi_on(const char *name, void *context, gwi_event_callback callback)
-{
-  struct gwi_event_node *handle;
-  handle = malloc(sizeof *handle);
-  assert(handle);
-  handle->context = context;
-  handle->callback   = callback;
-  assert(rt_tree_set(gwi_events, (const unsigned char *)name, strlen(name), handle));
-}
-
-void
-gwi_off(const char *name)
-{
-  struct gwi_event_node *handle;
-  handle = rt_tree_get(gwi_events, (const unsigned char *)name, strlen(name));
-  if (handle) free(handle);
-}
-
-void
-gwi_fire(const char *name, gwi_Event *event)
-{
-  struct gwi_event_node *handle;
-  handle = rt_tree_get(gwi_events, (const unsigned char *)name, strlen(name));
-  if (handle) handle->callback(handle->context, event);
 }
 
 void
@@ -106,40 +68,4 @@ void
 gwi_get_background(gwi_Color *color)
 {
   *color = gwi_bg;
-}
-
-void
-gwi_set_alloc_fn(void *ctx, gwi_alloc_fn fn )
-{
-  on_alloc = fn;
-  gwi_alloc_ctx = ctx;
-}
-
-void
-gwi_set_free_fn(void *ctx, gwi_free_fn fn )
-{
-  on_free = fn;
-  gwi_free_ctx = ctx;
-}
-
-void *
-gwi_alloc(size_t size)
-{
-  if (on_alloc)
-    return on_alloc(gwi_alloc_ctx, size);
-  return malloc(size);
-}
-
-void
-gwi_free(void *ptr)
-{
-  if (on_free)
-    on_free(gwi_free_ctx, ptr);
-  free(ptr);
-}
-
-void
-gwi_free_handle(gwi_Handle *handle)
-{
-  gwi_free(handle);
 }
